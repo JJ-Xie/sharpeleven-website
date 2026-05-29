@@ -42,10 +42,7 @@ export function Hero() {
               fontVariationSettings: '"opsz" 28',
             }}
           >
-            Efficient retrieval and reasoning systems designed for{" "}
-            <em style={{ fontStyle: "italic", color: "var(--color-ink)" }}>
-              large-scale document intelligence workloads
-            </em>
+            Architecting the next paradigm shift for <em>high performance</em> AI systems.
           </p>
 
           <ContextBar />

@@ -49,11 +49,11 @@ export function Contact() {
           <div className="flex flex-wrap items-center gap-3">
             {/* TODO: replace with the real contact address before launch */}
             <a
-              href="mailto:research@sharpeleven.com"
+              href="mailto:research@sharp-eleven.com"
               className="inline-flex items-center gap-[10px] rounded-full border border-[color:var(--color-line-2)] bg-[color:var(--color-bg)] px-[18px] py-3 font-mono-cust text-[14px] text-[color:var(--color-ink)] transition-colors duration-200 hover:border-[color:var(--color-ink-2)] hover:bg-[color:var(--color-bg-3)]"
             >
               <span className="text-[color:var(--color-sage-2)]">→</span>
-              research@sharpeleven.com
+              research@sharp-eleven.com
             </a>
           </div>
         </div>

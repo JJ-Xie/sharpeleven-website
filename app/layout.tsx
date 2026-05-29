@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   title: "SharpEleven — Long-context infrastructure for enterprise AI",
   description:
     "Efficient retrieval and reasoning systems designed for large-scale document intelligence workloads.",
-  metadataBase: new URL("https://sharpeleven.com"),
+  metadataBase: new URL("https://sharp-eleven.com"),
   openGraph: {
     title: "SharpEleven",
     description:
