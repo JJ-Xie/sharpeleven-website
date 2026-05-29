@@ -176,7 +176,7 @@ export function Briefs() {
                   <span className="doc-page">capabilities + applications</span>
                 </div>
                 <p className="doc-intro">
-                  SharpEleven develops <em>scalable retrieval and reasoning infrastructure</em> 
+                  SharpEleven develops <em>scalable long-context infrastructure </em> 
                   for <em>enterprise AI</em> workflows.
                 </p>
                 <div className="brief-two-col">

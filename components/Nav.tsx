@@ -36,7 +36,7 @@ export function Nav() {
             className="text-[14px] font-medium text-[color:var(--color-ink-2)] transition-colors hover:text-[color:var(--color-ink)]"
             style={{ fontFamily: "var(--font-sans)", letterSpacing: "-0.01em" }}
           >
-            Problem
+            Target Problem
           </a>
           <a
             href="#platform"
