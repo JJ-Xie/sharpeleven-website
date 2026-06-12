@@ -147,7 +147,7 @@ export function Briefs() {
                 </p>
                 <p className="doc-body">
                   As models scale, today&apos;s architectures stay constrained on
-                  every front:
+                  major fronts:
                 </p>
                 <LogList
                   items={PROBLEM_ITEMS}
@@ -210,8 +210,8 @@ export function Briefs() {
                 }`}
               >
                 <div className="doc-header">
-                  <span className="doc-label">Deployment</span>
-                  <span className="doc-page">today + transfer</span>
+                  <span className="doc-label">Deployment + Acquisition</span>
+                  <span className="doc-page">Testing + transfer</span>
                 </div>
                 <p className="doc-intro">
                   Deployed for testing as a <em>retrieval system</em>.
