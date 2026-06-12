@@ -41,7 +41,7 @@ export function Contact() {
             className="mb-9 max-w-[580px] text-[17px] text-[color:var(--color-ink-2)]"
             style={{ lineHeight: 1.6 }}
           >
-            SharpEleven is in pilot with a small set of partners for technical
+            SharpEleven is in contact with a small set of partners for technical
             demonstrations, deployments, and strategic collaborations. To
             begin a conversation:
           </p>
@@ -53,7 +53,7 @@ export function Contact() {
               className="inline-flex items-center gap-[10px] rounded-full border border-[color:var(--color-line-2)] bg-[color:var(--color-bg)] px-[18px] py-3 font-mono-cust text-[14px] text-[color:var(--color-ink)] transition-colors duration-200 hover:border-[color:var(--color-ink-2)] hover:bg-[color:var(--color-bg-3)]"
             >
               <span className="text-[color:var(--color-sage-2)]">→</span>
-              research@sharp-eleven.com
+              victor@sharp-eleven.com
             </a>
           </div>
         </div>

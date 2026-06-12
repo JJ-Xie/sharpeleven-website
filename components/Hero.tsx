@@ -19,14 +19,14 @@ export function Hero() {
               color: "var(--color-ink)",
             }}
           >
-            Long-context infrastructure{" "}
+            High Performance architecture{" "}
             <span
               style={{
                 fontStyle: "italic",
                 color: "var(--color-sage-2)",
               }}
             >
-              for enterprise
+              for frontier
             </span>{" "}
             <span style={{ color: "var(--color-ink)" }}>AI systems.</span>
           </h1>

@@ -4,11 +4,11 @@ export function Nav() {
   return (
     <header
       className="sticky top-0 z-50 border-b border-[color:var(--color-line)] backdrop-blur-[14px]"
-      style={{ background: "rgba(239, 234, 224, 0.78)" }}
+      style={{ background: "rgba(236, 239, 244, 0.78)" }}
     >
       <div className="wrap flex h-[68px] items-center justify-between">
         <a href="#top" className="flex items-center gap-2">
-          <LogoMark size={44} />
+          <LogoMark size={31} />
           <span
             className="text-[18px] font-bold tracking-[-0.035em] text-[color:var(--color-ink)]"
             style={{ fontFamily: "var(--font-sans)" }}
@@ -36,14 +36,14 @@ export function Nav() {
             className="text-[14px] font-medium text-[color:var(--color-ink-2)] transition-colors hover:text-[color:var(--color-ink)]"
             style={{ fontFamily: "var(--font-sans)", letterSpacing: "-0.01em" }}
           >
-            Target Problem
+            Target Problems
           </a>
           <a
             href="#platform"
             className="text-[14px] font-medium text-[color:var(--color-ink-2)] transition-colors hover:text-[color:var(--color-ink)]"
             style={{ fontFamily: "var(--font-sans)", letterSpacing: "-0.01em" }}
           >
-            Platform
+            Solution
           </a>
           <a
             href="#deployment"

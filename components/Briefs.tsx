@@ -5,40 +5,42 @@ import { useEffect, useState } from "react";
 type Tab = "problem" | "platform" | "deployment";
 
 const TABS: { id: Tab; meta: string; label: string }[] = [
-  { id: "problem", meta: "01 · 5 constraints", label: "Target Problem" },
-  { id: "platform", meta: "02 · capabilities + applications", label: "Platform" },
-  { id: "deployment", meta: "03 · 4 properties", label: "Deployment" },
+  { id: "problem", meta: "01 · 5 constraints", label: "Target Problems" },
+  { id: "platform", meta: "02 · capabilities + advantage", label: "Solution" },
+  { id: "deployment", meta: "03 · today + transfer", label: "Deployment" },
 ];
 
 type LogItem = { num: string; label: string };
 
 const PROBLEM_ITEMS: LogItem[] = [
-  { num: "01", label: "inference cost" },
-  { num: "02", label: "latency" },
-  { num: "03", label: "memory utilization" },
-  { num: "04", label: "response reliability" },
-  { num: "05", label: "deployment privacy" },
+  { num: "01", label: "inference cost eroding frontier-lab margins" },
+  { num: "02", label: "serving cost rising rapidly with scale" },
+  { num: "03", label: "slow, expensive, inaccurate long context" },
+  { num: "04", label: "context windows that can't run long enough" },
+  { num: "05", label: "no inherent explanation or interpretability of answers" },
 ];
 
 const CAPABILITIES: LogItem[] = [
-  { num: "A1", label: "support large-context document environments" },
-  { num: "A2", label: "reduce memory and compute overhead" },
-  { num: "A3", label: "integrate with existing model stacks" },
-  { num: "A4", label: "operate within customer-controlled infrastructure" },
+  { num: "A1", label: "substantially lower annual inference cost" },
+  { num: "A2", label: "longer context, faster and more accurate" },
+  { num: "A3", label: "answers explained inherently" },
 ];
 
-const APPLICATIONS: LogItem[] = [
-  { num: "B1", label: "large and multi document analysis" },
-  { num: "B2", label: "enterprise knowledge systems" },
-  { num: "B3", label: "diligence workflows" },
-  { num: "B4", label: "research and compliance environments" },
+const ADVANTAGES: LogItem[] = [
+  { num: "B1", label: "processes more tokens than any model" },
+  { num: "B2", label: "cheaper per token at long context" },
+  { num: "B3", label: "faster long-context inference" },
+  { num: "B4", label: "more accurate as inputs grow" },
 ];
 
-const DEPLOYMENT_ITEMS: LogItem[] = [
-  { num: "01", label: "On-premise compatible" },
-  { num: "02", label: "Customer-controlled infrastructure" },
-  { num: "03", label: "No external document transfer required" },
-  { num: "04", label: "Compatible with existing enterprise AI workflows" },
+const DEPLOYMENT_NOW: LogItem[] = [
+  { num: "01", label: "deployed as a retrieval system" },
+  { num: "02", label: "tested on real long-context workloads" },
+];
+
+const DEPLOYMENT_EXIT: LogItem[] = [
+  { num: "03", label: "full proprietary architecture" },
+  { num: "04", label: "transferred to a single acquirer" },
 ];
 
 function LogList({
@@ -135,30 +137,26 @@ export function Briefs() {
                 }`}
               >
                 <div className="doc-header">
-                  <span className="doc-label">Target Problem</span>
+                  <span className="doc-label">Target Problems</span>
                   <span className="doc-page">5 constraints</span>
                 </div>
                 <p className="doc-intro">
-                  Modern AI systems scale poorly across large-context
-                  environments.
+                  Frontier AI is hitting three limits at once —{" "}
+                  <em>inference cost</em>, <em>long context</em>, and{" "}
+                  <em>interpretability</em>.
                 </p>
                 <p className="doc-body">
-                  Organizations handling large proprietary datasets require
-                  systems capable of operating efficiently at extreme context
-                  lengths within secure environments.
-                </p>
-                <p className="doc-body">
-                  As enterprise document workloads grow, current architectures
-                  face increasing constraints in:
+                  As models scale, today&apos;s architectures stay constrained on
+                  every front:
                 </p>
                 <LogList
                   items={PROBLEM_ITEMS}
                   status="UNRESOLVED"
                   variant="critical"
                 />
-                
+
                 <div className="doc-footer">
-                  <span className="doc-meta">SharpEleven · Target Problem</span>
+                  <span className="doc-meta">SharpEleven · Target Problems</span>
                   <span className="doc-page">doc 01 / 03</span>
                 </div>
               </div>
@@ -172,16 +170,16 @@ export function Briefs() {
                 }`}
               >
                 <div className="doc-header">
-                  <span className="doc-label">Platform</span>
-                  <span className="doc-page">capabilities + applications</span>
+                  <span className="doc-label">Solution</span>
+                  <span className="doc-page">capabilities + advantage</span>
                 </div>
                 <p className="doc-intro">
-                  SharpEleven develops <em>scalable long-context infrastructure </em> 
-                  for <em>enterprise AI</em> workflows.
+                  SharpEleven is a <em>high-performance architecture</em> that
+                  resolves all three at once.
                 </p>
                 <div className="brief-two-col">
                   <div>
-                    <div className="col-head">The platform is designed to:</div>
+                    <div className="col-head">The architecture delivers:</div>
                     <LogList
                       items={CAPABILITIES}
                       status="ENABLED"
@@ -189,16 +187,16 @@ export function Briefs() {
                     />
                   </div>
                   <div>
-                    <div className="col-head">Target applications include:</div>
+                    <div className="col-head">Against other models:</div>
                     <LogList
-                      items={APPLICATIONS}
-                      status="SCOPED"
-                      variant="scoped"
+                      items={ADVANTAGES}
+                      status="BENCHMARKED"
+                      variant="fixed"
                     />
                   </div>
                 </div>
                 <div className="doc-footer">
-                  <span className="doc-meta">SharpEleven · Platform</span>
+                  <span className="doc-meta">SharpEleven · Solution</span>
                   <span className="doc-page">doc 02 / 03</span>
                 </div>
               </div>
@@ -213,16 +211,30 @@ export function Briefs() {
               >
                 <div className="doc-header">
                   <span className="doc-label">Deployment</span>
-                  <span className="doc-page">4 properties</span>
+                  <span className="doc-page">today + transfer</span>
                 </div>
                 <p className="doc-intro">
-                  Designed for <em>private deployment environments</em>.
+                  Deployed for testing as a <em>retrieval system</em>.
+                  Architecture transfers in full to a <em>single acquirer</em>.
                 </p>
-                <LogList
-                  items={DEPLOYMENT_ITEMS}
-                  status="COMPLIANT"
-                  variant="compliant"
-                />
+                <div className="brief-two-col">
+                  <div>
+                    <div className="col-head">In market today:</div>
+                    <LogList
+                      items={DEPLOYMENT_NOW}
+                      status="LIVE"
+                      variant="fixed"
+                    />
+                  </div>
+                  <div>
+                    <div className="col-head">On acquisition:</div>
+                    <LogList
+                      items={DEPLOYMENT_EXIT}
+                      status="ON EXIT"
+                      variant="scoped"
+                    />
+                  </div>
+                </div>
                 <div className="doc-footer">
                   <span className="doc-meta">SharpEleven · Deployment</span>
                   <span className="doc-page">doc 03 / 03</span>

@@ -9,7 +9,7 @@ export function LogoMark({
 }) {
   return (
     <Image
-      src="/logo-mark.png"
+      src="/logo.png"
       alt="SharpEleven"
       width={size}
       height={size}
