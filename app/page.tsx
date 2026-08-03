@@ -1,6 +1,7 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
-import { Briefs } from "@/components/Briefs";
+import { Capabilities } from "@/components/Capabilities";
+import { Figures } from "@/components/Figures";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 
@@ -10,7 +11,8 @@ export default function Page() {
       <Nav />
       <main>
         <Hero />
-        <Briefs />
+        <Capabilities />
+        <Figures />
         <Contact />
       </main>
       <Footer />

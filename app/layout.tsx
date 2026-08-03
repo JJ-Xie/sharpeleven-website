@@ -1,51 +1,42 @@
 import type { Metadata } from "next";
-import {
-  Geist_Mono,
-  Instrument_Serif,
-  Source_Serif_4,
-  Space_Grotesk,
-} from "next/font/google";
+import { IBM_Plex_Mono, Newsreader, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 
+/* Display — the memo headline face. Low weight, high optical size. */
+const newsreader = Newsreader({
+  variable: "--font-newsreader",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+/* Body — carried over from the memos and the previous site. */
 const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "600"],
   style: ["normal", "italic"],
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const spaceGrotesk = Space_Grotesk({
-  variable: "--font-space-grotesk",
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+/* Labels, meta, figures. */
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "SharpEleven — Long-context infrastructure for enterprise AI",
+  title: "SharpEleven — Long-context architecture for frontier AI",
   description:
-    "Efficient retrieval and reasoning systems designed for large-scale document intelligence workloads.",
+    "One forward pass over an input of any length. The representation is the memory, the index, the keys, and the values.",
   metadataBase: new URL("https://sharp-eleven.com"),
   openGraph: {
     title: "SharpEleven",
     description:
-      "Long-context infrastructure for enterprise AI systems. Efficient retrieval and reasoning for large-scale document intelligence.",
+      "Long-context architecture for frontier AI. One pass, unbounded, fully contextualised, one object.",
     type: "website",
   },
 };
@@ -58,7 +49,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sourceSerif.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable} ${geistMono.variable}`}
+      className={`${newsreader.variable} ${sourceSerif.variable} ${plexMono.variable}`}
     >
       <body>{children}</body>
     </html>

@@ -1,64 +1,29 @@
-import { LogoMark } from "./LogoMark";
+import Image from "next/image";
+import { NAV } from "./copy";
 
 export function Nav() {
   return (
-    <header
-      className="sticky top-0 z-50 border-b border-[color:var(--color-line)] backdrop-blur-[14px]"
-      style={{ background: "rgba(236, 239, 244, 0.78)" }}
-    >
-      <div className="wrap flex h-[68px] items-center justify-between">
-        <a href="#top" className="flex items-center gap-2">
-          <LogoMark size={31} />
-          <span
-            className="text-[18px] font-bold tracking-[-0.035em] text-[color:var(--color-ink)]"
-            style={{ fontFamily: "var(--font-sans)" }}
-          >
-            Sharp
-            <span
-              className="text-[color:var(--color-sage-2)]"
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontWeight: 400,
-                fontSize: "1.32em",
-                marginLeft: 2,
-                letterSpacing: 0,
-                lineHeight: 1,
-              }}
-            >
-              Eleven
-            </span>
+    <header className="nav">
+      <div className="wrap nav-inner">
+        <a href="#top" className="nav-brand" aria-label="SharpEleven, back to top">
+          <Image
+            src="/logo.png"
+            alt=""
+            width={26}
+            height={26}
+            priority
+            style={{ display: "block" }}
+          />
+          <span className="nav-wordmark">
+            Sharp<em>Eleven</em>
           </span>
         </a>
-        <nav className="hidden items-center gap-9 sm:flex">
-          <a
-            href="#problem"
-            className="text-[14px] font-medium text-[color:var(--color-ink-2)] transition-colors hover:text-[color:var(--color-ink)]"
-            style={{ fontFamily: "var(--font-sans)", letterSpacing: "-0.01em" }}
-          >
-            Target Problems
-          </a>
-          <a
-            href="#platform"
-            className="text-[14px] font-medium text-[color:var(--color-ink-2)] transition-colors hover:text-[color:var(--color-ink)]"
-            style={{ fontFamily: "var(--font-sans)", letterSpacing: "-0.01em" }}
-          >
-            Solution
-          </a>
-          <a
-            href="#deployment"
-            className="text-[14px] font-medium text-[color:var(--color-ink-2)] transition-colors hover:text-[color:var(--color-ink)]"
-            style={{ fontFamily: "var(--font-sans)", letterSpacing: "-0.01em" }}
-          >
-            Deployment
-          </a>
-          <a
-            href="#contact"
-            className="text-[14px] font-medium text-[color:var(--color-ink-2)] transition-colors hover:text-[color:var(--color-ink)]"
-            style={{ fontFamily: "var(--font-sans)", letterSpacing: "-0.01em" }}
-          >
-            Contact
-          </a>
+        <nav className="nav-links" aria-label="Sections">
+          {NAV.map((l) => (
+            <a key={l.href} href={l.href} className="nav-link">
+              {l.label}
+            </a>
+          ))}
         </nav>
       </div>
     </header>

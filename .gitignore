@@ -5,3 +5,7 @@ out
 .DS_Store
 .env*.local
 next-env.d.ts
+tsconfig.tsbuildinfo
+
+# Internal business memos — source material for the site's copy, not for the repo
+context/
