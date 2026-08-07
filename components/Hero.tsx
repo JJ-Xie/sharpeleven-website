@@ -7,7 +7,7 @@ import { HERO } from "./copy";
 /**
  * Full-viewport hero: the mark, rendered, holds the right of the frame while
  * the headline sits top-left against the empty half. The bottom rail carries
- * the scroll cue and nothing else.
+ * a centred scroll cue and nothing else.
  *
  * The hero is sticky rather than scrolling away — the next section rides up
  * over it while this one blurs back and fades in place. `--p` is scroll
@@ -75,8 +75,11 @@ export function Hero() {
         </div>
 
         <div className="hero-foot">
-          <a className="hero-scroll" href="#about" aria-label={HERO.scrollLabel}>
-            <span aria-hidden="true">↓</span>
+          <a className="hero-cue" href="#about">
+            <span className="hero-cue-label">{HERO.scrollCue}</span>
+            <span className="hero-cue-arrow" aria-hidden="true">
+              ↓
+            </span>
           </a>
         </div>
       </div>
