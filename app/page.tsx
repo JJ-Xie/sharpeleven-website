@@ -1,18 +1,19 @@
-import { Nav } from "@/components/Nav";
+import { SiteHeader } from "@/components/SiteHeader";
 import { Hero } from "@/components/Hero";
-import { Capabilities } from "@/components/Capabilities";
-import { Figures } from "@/components/Figures";
+import { Briefs } from "@/components/Briefs";
+import { Tiers } from "@/components/Tiers";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 
 export default function Page() {
   return (
     <>
-      <Nav />
+      <span id="top-sentinel" aria-hidden="true" />
+      <SiteHeader />
       <main>
         <Hero />
-        <Capabilities />
-        <Figures />
+        <Briefs />
+        <Tiers />
         <Contact />
       </main>
       <Footer />

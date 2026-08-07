@@ -31,10 +31,12 @@
   --color-blue-pale: #c9d0ef;
   /* was #c2674a — same terracotta, darkened for AA. */
   --color-clay: #aa5138;
+  /* main's status green was #3f7b51, which lands at 4.22:1 as text on its
+     own tint — this is the nearest shade that clears 4.5:1 */
+  --color-green: #3a7449;
 
   /* type */
-  --font-display: var(--font-newsreader), "Iowan Old Style", Charter, Georgia,
-    serif;
+  --font-display: var(--font-instrument-serif), "Times New Roman", Times, serif;
   --font-body: var(--font-source-serif), Charter, Georgia, serif;
   --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, Menlo,
     monospace;
@@ -64,7 +66,6 @@
 
 :root {
   --measure: 68ch;
-  --nav-h: 66px;
 
   /* Liquid glass. A translucent tinted surface, a blurred and slightly
      saturated backdrop, one specular hairline along the lit edge and a
@@ -109,8 +110,8 @@
   }
   body {
     font-family: var(--font-body);
-    font-size: 16.5px;
-    line-height: 1.62;
+    font-size: 17.5px;
+    line-height: 1.6;
     font-optical-sizing: auto;
     overflow-x: hidden;
     min-height: 100vh;
@@ -138,12 +139,51 @@
 /* ============================================================
    PRIMITIVES
    ============================================================ */
+/* Ambient wash with brand-coloured corner glows. Brought back from the main
+   branch at the user's request — it is the one deliberate decorative gradient
+   in the build, and .wrap sits above it. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      ellipse 50% 40% at 5% 0%,
+      color-mix(in srgb, var(--color-clay) 12%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 100% 15%,
+      color-mix(in srgb, var(--color-blue) 13%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 45% 40% at 0% 75%,
+      color-mix(in srgb, var(--color-blue) 8%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 95% 95%,
+      color-mix(in srgb, var(--color-clay) 8%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 40% 30% at 50% 50%,
+      color-mix(in srgb, var(--color-blue) 5%, transparent) 0%,
+      transparent 70%
+    );
+}
+
 @layer utilities {
   .wrap {
     width: 100%;
-    max-width: 1180px;
+    max-width: 1360px;
     margin: 0 auto;
     padding-inline: var(--space-8);
+    position: relative;
+    z-index: 3;
   }
   @media (max-width: 720px) {
     .wrap {
@@ -165,6 +205,7 @@
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
+  font-weight: 500;
   line-height: 1.4;
   letter-spacing: 0.17em;
   text-transform: uppercase;
@@ -176,15 +217,15 @@
 
 .display-1 {
   font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(42px, 6.2vw, 84px);
+  font-weight: 400;
+  font-size: clamp(40px, 5.6vw, 76px);
   line-height: 1.03;
   letter-spacing: -0.021em;
   margin: 0;
 }
 .display-2 {
   font-family: var(--font-display);
-  font-weight: 300;
+  font-weight: 400;
   font-size: clamp(31px, 4.3vw, 54px);
   line-height: 1.08;
   letter-spacing: -0.016em;
@@ -202,7 +243,7 @@
 .display-2 em,
 .display-3 em {
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--color-blue);
 }
 
@@ -214,7 +255,7 @@
   margin: 0;
 }
 .prose {
-  color: var(--color-ink-2);
+  color: var(--color-ink);
   margin: 0;
 }
 .prose em,
@@ -224,60 +265,117 @@
 }
 
 /* ============================================================
-   NAV
+   HEADER
+   Fixed bar. Brand and links sit at constant pixel offsets, not
+   inside the page container, so neither moves as the window
+   widens. Transparent over the hero render; it picks up a glass
+   surface once the hero scrolls away, which is what keeps the
+   links legible over content without laying an opaque strip
+   across the artwork.
    ============================================================ */
-.nav {
-  position: sticky;
+/* 1px marker at the document top; the header watches it to know whether the
+   page has scrolled at all */
+#top-sentinel {
+  position: absolute;
   top: 0;
-  z-index: 40;
-  isolation: isolate;
-  background: var(--glass-bg-strong);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--glass-edge);
-  box-shadow: var(--glass-sheen);
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
 }
-.nav-inner {
+.site-header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 50;
+  height: 66px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: var(--nav-h);
+  gap: var(--space-8);
+  padding-inline: 26px;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color var(--dur-mid) var(--ease-out),
+    border-color var(--dur-mid) var(--ease-out);
 }
-.nav-brand {
-  display: flex;
+/* From the first pixel of scroll the bar has to sit clearly on top of
+   whatever passes under it, hero included — a light tint let content read
+   through and the bar stopped looking like the front layer. Near-opaque,
+   with the blur kept so the edge still softens what it covers. */
+.site-header[data-stuck] {
+  background: color-mix(in srgb, var(--color-bg) 95%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  border-bottom-color: var(--color-line-2);
+  box-shadow: 0 1px 0 color-mix(in srgb, #ffffff 60%, transparent) inset,
+    0 6px 16px -12px color-mix(in srgb, var(--color-ink) 30%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition: none;
+  }
+}
+
+.brand {
+  display: inline-flex;
   align-items: center;
   gap: var(--space-3);
+  flex-shrink: 0;
 }
-.nav-wordmark {
+.brand img {
+  display: block;
+}
+.brand-word {
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 21px;
   letter-spacing: -0.02em;
+  color: var(--color-ink);
 }
-.nav-wordmark em {
+.brand-word em {
   font-style: italic;
   color: var(--color-blue);
 }
-.nav-links {
+
+.site-nav {
   display: flex;
   align-items: center;
   gap: var(--space-8);
 }
-.nav-link {
+.site-nav a {
   font-family: var(--font-mono);
-  font-size: 11.5px;
-  letter-spacing: 0.13em;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--color-ink-3);
-  padding-block: var(--space-2);
-  transition: color var(--dur-fast) var(--ease-out);
+  color: var(--color-ink-2);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    font-weight var(--dur-fast) var(--ease-out);
 }
-.nav-link:hover {
+.site-nav a:hover {
   color: var(--color-ink);
 }
-@media (max-width: 760px) {
-  .nav-links {
-    display: none;
+/* the section currently in view */
+.site-nav a[aria-current="true"] {
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    padding-inline: 20px;
+    gap: var(--space-4);
+  }
+  .brand-word {
+    font-size: 19px;
+  }
+  .site-nav {
+    gap: var(--space-4);
+  }
+  .site-nav a {
+    font-size: 10px;
+    letter-spacing: 0.1em;
   }
 }
 
@@ -288,126 +386,180 @@
    nearly all its ink in the lower third — and that is the shape
    this section holds to.
    ============================================================ */
+/* Sticky rather than scrolling away: the next section rides up over it while
+   this one blurs back and fades. --p is scroll progress, written by Hero.tsx.
+   Layering, bottom to top: hero (0) -> section backgrounds (1) -> the ambient
+   wash (2, fixed) -> .wrap content (3). The sections need an opaque ground to
+   occlude the pinned hero, which is why the wash sits above them rather than
+   behind. */
 .hero {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 0;
   isolation: isolate;
-  min-height: calc(100svh - var(--nav-h));
-  display: flex;
-  flex-direction: column;
-  padding-top: clamp(40px, 6vh, 84px);
-  padding-bottom: var(--space-12);
   overflow: hidden;
-}
-.hero-head {
-  position: relative;
-  z-index: 2;
-  max-width: 940px;
-}
-.hero-eyebrow {
+  min-height: 100svh;
+  height: 100svh;
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  margin-bottom: var(--space-8);
+  --p: 0;
 }
-.hero-eyebrow::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--color-line);
-  max-width: 180px;
+.hero-bg {
+  filter: blur(calc(var(--p) * 20px));
+  opacity: calc(1 - var(--p) * 0.7);
 }
-.hero-title {
-  margin-bottom: var(--space-8);
+.hero-inner {
+  opacity: calc(1 - var(--p) * 1.35);
+  transform: translateY(calc(var(--p) * -28px));
 }
-.hero-lede {
-  max-width: 56ch;
-  margin-bottom: var(--space-12);
-}
-.hero-props {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-edge);
-  box-shadow: var(--glass-sheen), var(--glass-depth);
-}
-.hero-prop {
-  padding: var(--space-4) var(--space-6);
-  border-left: 1px solid color-mix(in srgb, var(--color-line) 55%, transparent);
-}
-.hero-prop:first-child {
-  border-left: 0;
-}
-.hero-prop-num {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  color: var(--color-blue);
-  margin-bottom: var(--space-2);
-}
-.hero-prop-label {
-  font-size: 14.5px;
-  line-height: 1.35;
-  color: var(--color-ink-2);
-}
-@media (max-width: 760px) {
-  .hero-props {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .hero-prop:nth-child(3) {
-    border-left: 0;
-  }
-  .hero-prop:nth-child(n + 3) {
-    border-top: 1px solid var(--color-line);
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg,
+  .hero-inner {
+    filter: none;
+    opacity: 1;
+    transform: none;
   }
 }
-
-/* The artwork sits behind everything, full bleed. The mask is a legibility
-   device, not decoration: it lifts the image off the headline while leaving
-   the horizon and the data curves untouched. */
-.hero-backdrop {
+/* the rendered mark holds the right of the frame; the left half is open
+   field, which is where the headline goes */
+.hero-bg {
   position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   user-select: none;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.42) 16%,
-    rgba(0, 0, 0, 0.88) 36%,
-    #000 52%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(0, 0, 0, 0.42) 16%,
-    rgba(0, 0, 0, 0.88) 36%,
-    #000 52%
-  );
 }
-/* On a phone the type nearly fills the viewport, so pull the mask down to
-   keep the artwork clear of it and crop harder into the centre. */
-@media (max-width: 760px) {
-  .hero-backdrop {
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.2) 34%,
-      rgba(0, 0, 0, 0.8) 58%,
-      #000 74%
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      transparent 0%,
-      rgba(0, 0, 0, 0.2) 34%,
-      rgba(0, 0, 0, 0.8) 58%,
-      #000 74%
-    );
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  /* Tracks .wrap exactly up to a ~1696px viewport, then stops following the
+     centring margin so the headline does not drift away from the left edge
+     while the full-bleed artwork keeps spreading. */
+  max-width: none;
+  /* Shared with the text column below: the column's right edge is
+     padding + width, so it has to know the padding to stay clear of the
+     rendered mark. */
+  --hero-pad: clamp(
+    var(--space-8),
+    calc((100vw - 1360px) / 2 + var(--space-8)),
+    200px
+  );
+  padding-inline: var(--hero-pad);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-12);
+  /* clear the fixed mark in the corner */
+  padding-top: clamp(104px, 13vh, 150px);
+  padding-bottom: clamp(28px, 4.5vh, 52px);
+}
+
+/* The rendered mark occupies roughly the right 45-90% of the frame, so the
+   text column has to stay clear of it. The mark starts at ~48vw, so the column
+   ends at 46vw — measured from the viewport edge, which means subtracting the
+   padding it sits behind. A plain `min(48vw, …)` cap ignores that offset and
+   runs the headline into the render once the padding caps out at 200px. */
+.hero-head {
+  max-width: calc(46vw - var(--hero-pad));
+}
+/* The hero headline is the one place on the page that carries real weight.
+   The display scale runs at 300 everywhere else; against a rendered object
+   that light a cut reads washed out. 400 gives it presence without going
+   heavy — 500 was too much. The italic tracks it so the line keeps an even
+   colour. */
+.hero-title {
+  font-size: clamp(40px, 5.1vw, 68px);
+  font-weight: 400;
+  letter-spacing: -0.024em;
+  margin-bottom: var(--space-8);
+}
+.hero-title em {
+  font-weight: 400;
+}
+
+/* underlined action, sized off the mono label scale */
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-ink-3);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.hero-cta:hover {
+  color: var(--color-blue);
+  border-color: var(--color-blue);
+}
+.hero-cta-arrow {
+  transition: transform var(--dur-mid) var(--ease-out);
+}
+.hero-cta:hover .hero-cta-arrow {
+  transform: translateX(4px);
+}
+
+/* bottom rail: scroll cue at one end, supporting copy at the other */
+.hero-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+.hero-scroll {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--color-line-2);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-sheen);
+  color: var(--color-ink-2);
+  font-size: 14px;
+  line-height: 1;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.hero-scroll span {
+  animation: hero-bob 2.4s var(--ease-out) infinite;
+}
+.hero-scroll:hover {
+  border-color: var(--color-blue);
+  color: var(--color-blue);
+}
+@keyframes hero-bob {
+  0%,
+  100% {
+    transform: translateY(-2px);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll span {
+    animation: none;
+  }
+}
+@media (max-width: 860px) {
+  .hero-head {
+    max-width: 22ch;
+  }
+  .hero-foot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-6);
   }
 }
 
@@ -415,125 +567,647 @@
    SECTIONS
    ============================================================ */
 .section {
-  padding-block: clamp(80px, 11vw, 148px);
+  padding-block: clamp(52px, 6.5vw, 92px);
   position: relative;
+  z-index: 1;
+  background: var(--color-bg);
+  /* clear the fixed header when jumped to via an anchor */
+  scroll-margin-top: 78px;
 }
 .section-line {
   border-top: 1px solid var(--color-line);
 }
+/* Label and heading stack on a shared left edge — the old two-column form
+   set the heading 180px in from its own eyebrow, which read as two unrelated
+   elements rather than a label and the thing it labels. */
 .section-head {
-  display: grid;
-  grid-template-columns: 148px 1fr;
-  gap: var(--space-8);
-  align-items: baseline;
-  margin-bottom: var(--space-16);
+  margin-bottom: var(--space-12);
 }
-@media (max-width: 860px) {
-  .section-head {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-    margin-bottom: var(--space-12);
+.section-head .eyebrow {
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
+/* --- brief viewer: browser chrome over a paper document ---------------
+   Moved from the main branch. Layout, chrome and log-line treatment are
+   main's; colours are this branch's tokens and the type is this branch's
+   faces (main's --color-sage-2 was this --color-blue, --font-serif is
+   --font-body). Two substitutions worth knowing:
+
+     - main used #ffffff for the active tab and the page. Nothing in this
+       branch is pure white; both use --color-paper.
+     - main's status pills used a one-off green (#3f7b51) for LIVE and
+       BENCHMARKED. That hue is not in the palette, so the four states are
+       carried by two hues instead: clay for unresolved, and blue at three
+       weights, with the strongest state filled rather than outlined.
+
+   The page is paper, not glass, on purpose. Glass is the chrome material
+   in this design (nav, contact card, pill); a brief is a document, and
+   the contrast between the two is doing work. */
+.tab-doc {
+  position: relative;
+}
+
+.doc-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 8px 12px 0;
+  background: var(--color-bg-3);
+  border: 1px solid var(--color-line-2);
+  border-bottom: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 3;
+}
+.chrome-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px 0 4px;
+  align-self: center;
+  flex-shrink: 0;
+}
+.chrome-dot {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7);
+}
+.chrome-dot:nth-child(1) {
+  background: color-mix(in srgb, var(--color-clay) 50%, transparent);
+  border-color: color-mix(in srgb, var(--color-clay) 65%, transparent);
+}
+.chrome-dot:nth-child(2) {
+  background: color-mix(in srgb, var(--color-ink-3) 45%, transparent);
+  border-color: color-mix(in srgb, var(--color-ink-3) 60%, transparent);
+}
+.chrome-dot:nth-child(3) {
+  background: color-mix(in srgb, var(--color-blue) 45%, transparent);
+  border-color: color-mix(in srgb, var(--color-blue) 65%, transparent);
+}
+
+.doc-tab {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 10px 20px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  color: var(--color-ink-2);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  z-index: 1;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.doc-tab:hover:not(.active) {
+  background: color-mix(in srgb, var(--color-bg-2) 90%, transparent);
+  color: var(--color-ink);
+}
+.doc-tab.active {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border-color: var(--color-line-2);
+  z-index: 4;
+  box-shadow: var(--glass-sheen);
+}
+/* cover the seam between the active tab and the page below it */
+.doc-tab.active::after {
+  content: "";
+  position: absolute;
+  /* inset to the tab's own width — overhanging it by a pixel leaves a
+     visible notch on the last tab, where there is chrome to the right
+     rather than page */
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 3px;
+  background: var(--color-paper);
+}
+/* hairline separators between inactive neighbours */
+.doc-tab + .doc-tab:not(.active):not(:hover) {
+  box-shadow: inset 1px 0 0 var(--color-line);
+}
+.doc-tab.active + .doc-tab {
+  box-shadow: none;
+}
+
+.brief-page {
+  position: relative;
+  z-index: 2;
+  background: var(--color-paper);
+  border: 1px solid var(--color-line-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) var(--radius-sm);
+  padding: 32px 40px 26px;
+}
+.doc-panel {
+  position: relative;
+  z-index: 1;
+}
+.doc-panel.is-active {
+  animation: doc-in 320ms var(--ease-out) both;
+}
+@keyframes doc-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-panel.is-active {
+    animation: none;
   }
 }
 
-/* --- capability list --- */
-.capabilities {
-  border-top: 1px solid var(--color-line);
-}
-.capability {
-  display: grid;
-  grid-template-columns: 86px 1fr 1fr;
-  gap: var(--space-8);
-  padding-block: var(--space-12);
-  border-bottom: 1px solid var(--color-line);
-  align-items: start;
-}
-.capability-num {
+.doc-header,
+.doc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+.doc-header {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-line);
+}
+.doc-footer {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+}
+.doc-label,
+.doc-meta {
   color: var(--color-blue);
-  padding-top: 6px;
 }
-.capability-body {
+.doc-page {
   color: var(--color-ink-2);
-  max-width: 54ch;
 }
-@media (max-width: 900px) {
-  .capability {
-    grid-template-columns: 56px 1fr;
-    gap: var(--space-4) var(--space-6);
-    padding-block: var(--space-8);
+
+.doc-intro {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(20px, 1.75vw, 25px);
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
+  max-width: 62ch;
+  margin: var(--space-6) 0 0;
+}
+.doc-intro em {
+  font-style: italic;
+  color: var(--color-blue);
+}
+.doc-body {
+  font-size: 16px;
+  line-height: 1.58;
+  color: var(--color-ink);
+  max-width: 62ch;
+  margin: var(--space-4) 0 0;
+}
+
+.brief-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  margin-top: 0;
+}
+/* the column head needs air under the intro above it — the gap belongs here
+   rather than on the grid, so the single-column panels get it too */
+.col-head {
+  margin-top: var(--space-12);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-blue);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-line);
+}
+
+/* --- log lines --- */
+.log-list {
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-4) 0 0;
+}
+.log-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--color-line);
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+.log-line:last-child {
+  border-bottom: none;
+}
+.log-num {
+  flex-shrink: 0;
+  color: var(--color-ink-3);
+}
+.log-label {
+  color: var(--color-ink);
+}
+.log-leader {
+  flex: 1;
+  min-width: 24px;
+  margin: 0 var(--space-1);
+  height: 0;
+  border-bottom: 1.5px dotted var(--color-line-2);
+  transform: translateY(-5px);
+}
+.log-status {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid transparent;
+}
+/* four states, two hues: the strongest is filled rather than outlined */
+.log-status-critical {
+  color: var(--color-clay);
+  background: color-mix(in srgb, var(--color-clay) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-clay) 34%, transparent);
+}
+.log-status-enabled {
+  color: var(--color-blue);
+  background: color-mix(in srgb, var(--color-blue) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-blue) 32%, transparent);
+}
+/* BENCHMARKED and LIVE — main's green, restored */
+.log-status-proven {
+  color: var(--color-green);
+  background: color-mix(in srgb, var(--color-green) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-green) 38%, transparent);
+}
+.log-status-scoped {
+  color: var(--color-blue);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--color-blue) 26%, transparent);
+}
+
+.brief-two-col .log-list {
+  margin-top: var(--space-3);
+}
+.brief-two-col .log-line {
+  font-size: 13px;
+  padding: 8px 0;
+  gap: var(--space-2);
+}
+
+@media (max-width: 860px) {
+  .brief-two-col {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
   }
-  .capability-body {
-    grid-column: 2;
+}
+@media (max-width: 720px) {
+  .doc-tabs {
+    padding: 6px 6px 0;
+  }
+  .chrome-dots {
+    display: none;
+  }
+  .doc-tab {
+    padding: 9px 10px 10px;
+    font-size: 14px;
+    white-space: normal;
+  }
+  .brief-page {
+    padding: 28px 22px 26px;
+  }
+  .log-line {
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .log-leader {
+    min-width: 12px;
   }
 }
 
-/* --- figures table --- */
-.figures {
-  width: 100%;
-  border-collapse: collapse;
-  font-variant-numeric: tabular-nums;
+/* --- tier diagram ------------------------------------------------------
+   Ported from the Tier Stack prototype. Geometry comes from the component;
+   everything here is presentation, on this branch's tokens rather than the
+   prototype's hardcoded hexes.
+
+   `.is-on` is every ring up to the pointed-at tier — the lighting is
+   cumulative because each tier contains the ones before it. `.is-lead` is the
+   pointed-at tier alone, which gets the heavier stroke, the halo and the
+   description. */
+.tier-stage {
+  display: flex;
+  justify-content: center;
+  /* Upper labels grow their description upward, so the stage needs headroom
+     above the circle or Serenity's runs into the section heading. Removing the
+     hint line already bought ~60px back, so this still sits closer to the
+     title than the original. */
+  padding-block: clamp(88px, 10vw, 148px) clamp(120px, 13vw, 190px);
 }
-.figures caption {
-  text-align: left;
-  padding-bottom: var(--space-6);
+.tier-plot {
+  position: relative;
+  width: clamp(300px, 46vw, 600px);
+  aspect-ratio: 1;
 }
-.figures th {
+
+.tier-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--color-blue) 30%, transparent);
+  background: color-mix(in srgb, #ffffff 40%, transparent);
+  transition:
+    background-color var(--dur-mid) var(--ease-out),
+    border-color var(--dur-mid) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out);
+}
+.tier-ring.is-on {
+  border-color: var(--color-blue);
+  background: color-mix(in srgb, var(--color-blue) 5%, transparent);
+}
+.tier-ring.is-lead {
+  border-width: 2px;
+  background: color-mix(in srgb, var(--color-blue) 10%, transparent);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--color-blue) 7%, transparent);
+}
+
+.tier-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
   font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 400;
-  letter-spacing: 0.13em;
+  font-size: 9px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--color-ink-3);
-  text-align: left;
-  padding: 0 var(--space-6) var(--space-3) 0;
-  border-bottom: 1px solid var(--color-line-2);
-  vertical-align: bottom;
 }
-.figures td {
-  padding: var(--space-4) var(--space-6) var(--space-4) 0;
-  border-bottom: 1px solid var(--color-line);
-  font-size: 15px;
+
+.tier-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* leader from the ring's edge out to its dot */
+.tier-lead {
+  position: absolute;
+  height: 1px;
+  transform-origin: 0 50%;
+  background: color-mix(in srgb, var(--color-blue) 38%, transparent);
+  transition:
+    background-color var(--dur-mid) var(--ease-out),
+    height var(--dur-mid) var(--ease-out);
+}
+.tier-lead.is-on {
+  height: 2px;
+  background: var(--color-blue);
+}
+.tier-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: color-mix(in srgb, var(--color-blue) 38%, transparent);
+  transition:
+    background-color var(--dur-mid) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out);
+}
+.tier-dot.is-on {
+  background: var(--color-blue);
+}
+.tier-dot.is-lead {
+  width: 9px;
+  height: 9px;
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-blue) 14%, transparent);
+}
+
+/* the label sits on an anchor circle just outside the largest ring */
+.tier-label {
+  position: absolute;
+  width: clamp(232px, 19vw, 276px);
+  pointer-events: auto;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+}
+.tier-meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 7px;
+}
+.tier-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--color-ink-3);
+  transition: color var(--dur-mid) var(--ease-out);
+}
+.tier-tick {
+  height: 1px;
+  width: 22px;
+  background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+  transition:
+    width 300ms var(--ease-out),
+    background-color var(--dur-mid) var(--ease-out);
+}
+.tier-name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(20px, 2.1vw, 27px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  transition: color var(--dur-mid) var(--ease-out);
+}
+.tier-chip {
+  display: block;
+  margin-top: 7px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  /* tighter than the other mono labels: the longest chip is 32 characters,
+     and at 0.14em it needs 249px, which no label is that wide below a
+     ~1310px viewport. At 0.08em it needs 228px and fits the 232px minimum. */
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  transition: color var(--dur-mid) var(--ease-out);
+}
+/* Lifted out of the label's layout so its length cannot push the name away
+   from the leader line; it grows away from the rings instead. */
+.tier-desc {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 9px);
+  display: block;
+  font-size: 15.5px;
+  line-height: 1.45;
   color: var(--color-ink-2);
+  text-wrap: pretty;
+  opacity: 0;
+  transition: opacity var(--dur-mid) var(--ease-out);
 }
-.figures td:first-child {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--color-ink);
-}
-.figures .fig {
-  font-family: var(--font-mono);
-  font-size: 13.5px;
-  color: var(--color-ink);
-}
-.figures .fig-accent {
+
+.tier-label.is-on .tier-num,
+.tier-label.is-on .tier-chip,
+.tier-label.is-on .tier-name {
   color: var(--color-blue);
 }
-.figures tr:last-child td {
-  border-bottom: 0;
+.tier-label.is-on .tier-tick {
+  background: var(--color-blue);
 }
-@media (max-width: 720px) {
-  .figures-scroll {
-    overflow-x: auto;
-    margin-inline: calc(var(--space-6) * -1);
-    padding-inline: var(--space-6);
+.tier-label.is-lead .tier-tick {
+  width: 44px;
+}
+.tier-label[data-dir="up"] .tier-desc {
+  top: auto;
+  bottom: calc(100% + 9px);
+}
+.tier-label.is-lead .tier-desc {
+  opacity: 1;
+}
+
+/* The orbit needs a circle plus a full-width label either side. Below about
+   1024px that no longer fits, so the diagram becomes a plain stacked list and
+   every description stays open. */
+@media (max-width: 1024px) {
+    .tier-stage {
+    display: block;
+    padding-block: 0;
   }
-  .figures {
-    min-width: 560px;
+  .tier-plot {
+    width: 100%;
+    aspect-ratio: auto;
+  }
+  .tier-ring,
+  .tier-core,
+  .tier-lead,
+  .tier-dot {
+    display: none;
+  }
+  .tier-layer {
+    position: static;
+  }
+  .tier-label {
+    position: static;
+    width: 100%;
+    transform: none !important;
+    text-align: left !important;
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--color-line);
+  }
+  .tier-meta {
+    justify-content: flex-start !important;
+  }
+  .tier-desc {
+    position: static;
+    margin-top: 9px;
+    opacity: 1;
+    max-width: 54ch;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tier-ring,
+  .tier-lead,
+  .tier-dot,
+  .tier-num,
+  .tier-tick,
+  .tier-name,
+  .tier-chip,
+  .tier-desc {
+    transition: none;
   }
 }
 
 /* --- contact --- */
+/* Main's contact card: its own radial wash, a hairline border and the corner
+   brackets. Replaces the glass treatment this branch had been using. */
 .contact-card {
-  border-radius: var(--radius-md);
-  padding: clamp(32px, 5vw, 68px);
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-edge);
-  box-shadow: var(--glass-sheen), var(--glass-depth);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  padding: clamp(40px, 5vw, 60px) clamp(40px, 5vw, 60px)
+    clamp(44px, 6vw, 72px);
+  background:
+    radial-gradient(
+      ellipse at top right,
+      rgb(74 149 201 / 0.22),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at bottom left,
+      color-mix(in srgb, var(--color-clay) 13%, transparent),
+      transparent 55%
+    ),
+    var(--color-bg-2);
+}
+/* corner brackets */
+.contact-card::before,
+.contact-card::after {
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--color-blue);
+  pointer-events: none;
+}
+.contact-card::before {
+  top: 28px;
+  left: 28px;
+  border-right: none;
+  border-bottom: none;
+}
+.contact-card::after {
+  right: 28px;
+  bottom: 28px;
+  border-left: none;
+  border-top: none;
+}
+.contact-card > * {
+  position: relative;
+  z-index: 1;
 }
 .mailto {
   display: inline-flex;
@@ -577,6 +1251,9 @@
 
 /* --- footer --- */
 .footer {
+  position: relative;
+  z-index: 1;
+  background: var(--color-bg);
   border-top: 1px solid var(--color-line);
   padding-block: var(--space-12) var(--space-16);
 }

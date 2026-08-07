@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Newsreader, Source_Serif_4 } from "next/font/google";
+import {
+  IBM_Plex_Mono,
+  Instrument_Serif,
+  Source_Serif_4,
+} from "next/font/google";
 import "./globals.css";
 
-/* Display — the memo headline face. Low weight, high optical size. */
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+/* Display — tall, narrow, high-contrast. Ships a single 400 weight, which is
+   why every display class is pinned to 400: asking for 500 would only get a
+   synthesised faux-bold, and that wrecks a face with hairlines this fine. */
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["400"],
   style: ["normal", "italic"],
   display: "swap",
 });
@@ -49,7 +55,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${sourceSerif.variable} ${plexMono.variable}`}
+      className={`${instrumentSerif.variable} ${sourceSerif.variable} ${plexMono.variable}`}
     >
       <body>{children}</body>
     </html>
