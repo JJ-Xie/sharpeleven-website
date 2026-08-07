@@ -153,6 +153,10 @@ A staggered entrance on the header and hero, pure CSS — no JS, no hydration de
 
 `site-header` and `hero-bg` fade; `hero-title` (120ms), `hero-cta` (260ms) and `hero-cue` (420ms) fade and rise.
 
+Body sections get the same entrance via `RevealSections` — a render-nothing client component that observes `main > section` and the footer and marks each as it first enters view. **Triggered on entering view, not on load**: an animation on a section three screens down finishes long before anyone scrolls to it. Anything already on screen fades immediately, so the load case still reads as one continuous entrance.
+
+The hidden state is gated behind `data-reveal="on"`, set in a layout effect before paint. **Without JS the attribute never lands and every section stays at opacity 1** — verified. The page never depends on this to be readable.
+
 **The reduced-motion override is unlayered on purpose.** The entrance rules are unlayered, and an override inside `@layer base` loses to them regardless of specificity — reduced-motion users were still getting the full entrance until this was moved out. Verified at **0 running animations** under `prefers-reduced-motion: reduce`.
 
 ## Glass
