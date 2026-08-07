@@ -4,51 +4,27 @@ export default function NotFound() {
   return (
     <main
       style={{
-        minHeight: "calc(100vh - 200px)",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 16,
-        padding: 32,
+        minHeight: "72vh",
+        display: "grid",
+        placeItems: "center",
         textAlign: "center",
+        padding: "var(--space-8)",
       }}
     >
-      <p
-        style={{
-          fontFamily: "var(--font-mono)",
-          fontSize: 11,
-          letterSpacing: "0.18em",
-          textTransform: "uppercase",
-          color: "var(--color-sage-2)",
-        }}
-      >
-        404 · Not Found
-      </p>
-      <h1
-        style={{
-          fontFamily: "var(--font-display)",
-          fontSize: "clamp(32px, 4vw, 52px)",
-          lineHeight: 1.06,
-          letterSpacing: "-0.015em",
-          margin: 0,
-          color: "var(--color-ink)",
-        }}
-      >
-        This page doesn&apos;t exist.
-      </h1>
-      <Link
-        href="/"
-        style={{
-          fontFamily: "var(--font-sans)",
-          fontSize: 14,
-          fontWeight: 500,
-          color: "var(--color-sage-2)",
-          marginTop: 8,
-        }}
-      >
-        ← Back to home
-      </Link>
+      <div>
+        <p className="eyebrow" style={{ marginBottom: "var(--space-6)" }}>
+          404 · Not found
+        </p>
+        <h1 className="display-2 balance" style={{ marginBottom: "var(--space-8)" }}>
+          This page doesn&apos;t <em>exist.</em>
+        </h1>
+        <Link className="mailto" href="/">
+          <span className="mailto-arrow" aria-hidden="true">
+            ←
+          </span>
+          Back to home
+        </Link>
+      </div>
     </main>
   );
 }
