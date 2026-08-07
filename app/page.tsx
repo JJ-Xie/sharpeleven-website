@@ -1,4 +1,5 @@
 import { SiteHeader } from "@/components/SiteHeader";
+import { RevealSections } from "@/components/RevealSections";
 import { Hero } from "@/components/Hero";
 import { Briefs } from "@/components/Briefs";
 import { Tiers } from "@/components/Tiers";
@@ -10,6 +11,7 @@ export default function Page() {
     <>
       <span id="top-sentinel" aria-hidden="true" />
       <SiteHeader />
+      <RevealSections />
       <main>
         <Hero />
         <Briefs />

@@ -158,6 +158,20 @@
   }
 }
 
+/* Body sections get the same entrance as the hero, triggered as each first
+   enters view rather than on load — a load-time animation on a section three
+   screens down finishes long before anyone sees it. Gated behind the
+   data-reveal flag, which only JS sets, so without it everything stays
+   plainly visible. */
+[data-reveal="on"] main > section:not(#top):not(.is-in),
+[data-reveal="on"] footer:not(.is-in) {
+  opacity: 0;
+}
+[data-reveal="on"] main > section.is-in,
+[data-reveal="on"] footer.is-in {
+  animation: enter 720ms var(--ease-out) both;
+}
+
 /* Unlayered on purpose: the entrance rules below are unlayered, and a
    reduced-motion override inside @layer base would lose to them. */
 @media (prefers-reduced-motion: reduce) {
@@ -167,8 +181,11 @@
   .hero-cta,
   .hero-cue,
   .hero-cue-arrow,
-  .doc-panel.is-active {
+  .doc-panel.is-active,
+  main > section,
+  footer {
     animation: none !important;
+    opacity: 1 !important;
   }
 }
 
