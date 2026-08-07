@@ -92,6 +92,28 @@
   }
 }
 
+/* Soft load-in. Nothing here is JS-driven — the animations start on first
+   paint with `both` fill, so each element is already in its start state
+   before it renders and there is no flash of unstyled position. */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes enter-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -133,6 +155,20 @@
     html {
       scroll-behavior: auto;
     }
+  }
+}
+
+/* Unlayered on purpose: the entrance rules below are unlayered, and a
+   reduced-motion override inside @layer base would lose to them. */
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .hero-bg,
+  .hero-title,
+  .hero-cta,
+  .hero-cue,
+  .hero-cue-arrow,
+  .doc-panel.is-active {
+    animation: none !important;
   }
 }
 
@@ -284,6 +320,7 @@ body::before {
   pointer-events: none;
 }
 .site-header {
+  animation: enter-fade 900ms var(--ease-out) both;
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 50;
@@ -427,6 +464,7 @@ body::before {
   z-index: 0;
   pointer-events: none;
   user-select: none;
+  animation: enter-fade 1000ms var(--ease-out) both;
 }
 .hero-inner {
   position: relative;
@@ -468,6 +506,7 @@ body::before {
    heavy — 500 was too much. The italic tracks it so the line keeps an even
    colour. */
 .hero-title {
+  animation: enter 760ms var(--ease-out) 120ms both;
   font-size: clamp(40px, 5.1vw, 68px);
   font-weight: 400;
   letter-spacing: -0.024em;
@@ -479,6 +518,7 @@ body::before {
 
 /* underlined action, sized off the mono label scale */
 .hero-cta {
+  animation: enter 760ms var(--ease-out) 260ms both;
   display: inline-flex;
   align-items: center;
   gap: var(--space-4);
@@ -506,52 +546,42 @@ body::before {
 }
 
 /* bottom rail: scroll cue at one end, supporting copy at the other */
+/* bottom rail: a single centred cue */
 .hero-foot {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-12);
+  justify-content: center;
 }
-.hero-scroll {
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1px solid var(--color-line-2);
-  background: var(--glass-bg);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-shadow: var(--glass-sheen);
-  color: var(--color-ink-2);
-  font-size: 14px;
+.hero-cue {
+  animation: enter 760ms var(--ease-out) 420ms both;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.hero-cue:hover {
+  color: var(--color-ink);
+}
+.hero-cue-arrow {
+  font-size: 13px;
   line-height: 1;
-  transition:
-    border-color var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out);
+  animation: cue-bob 2.6s var(--ease-out) infinite;
 }
-.hero-scroll span {
-  animation: hero-bob 2.4s var(--ease-out) infinite;
-}
-.hero-scroll:hover {
-  border-color: var(--color-blue);
-  color: var(--color-blue);
-}
-@keyframes hero-bob {
+@keyframes cue-bob {
   0%,
   100% {
     transform: translateY(-2px);
   }
   50% {
-    transform: translateY(2px);
+    transform: translateY(3px);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hero-scroll span {
-    animation: none;
-  }
-}
+
 @media (max-width: 860px) {
   .hero-head {
     max-width: 22ch;

@@ -129,6 +129,8 @@ The Products section. Ported from a DC prototype (`Tier Stack.dc.html` in the re
 
 **The lighting is cumulative, not a selection.** Each tier contains the one before it, so pointing at tier N lights every ring up to and including N (`.is-on`). Only the pointed-at tier is `.is-lead` — heavier stroke, halo, and its description fades in.
 
+**Nexus is lit on load and the selection is sticky.** `active` is a plain `number` starting at `0`, never null, and there are no `onMouseLeave`/`onBlur` handlers — moving away holds the last tier rather than going dark. The diagram should never read as inert.
+
 Label placement has two axes, both derived from the tier's angle:
 
 - **horizontal**: alignment flips off `cos`, so text on the left of the circle is right-aligned into it
@@ -144,6 +146,14 @@ Two more things that matter if you touch it:
 - The prototype was hover-only. Each label is a real `<button>` here, and `focus` lights the same path `hover` does, so the diagram is usable from the keyboard.
 
 Under 1024px the labels cannot orbit without colliding — a circle plus a full-width label either side no longer fits — so the whole thing becomes a plain stacked list with every description open.
+
+## Load-in
+
+A staggered entrance on the header and hero, pure CSS — no JS, no hydration dependency. The animations use `both` fill so each element is already in its start state before first paint.
+
+`site-header` and `hero-bg` fade; `hero-title` (120ms), `hero-cta` (260ms) and `hero-cue` (420ms) fade and rise.
+
+**The reduced-motion override is unlayered on purpose.** The entrance rules are unlayered, and an override inside `@layer base` loses to them regardless of specificity — reduced-motion users were still getting the full entrance until this was moved out. Verified at **0 running animations** under `prefers-reduced-motion: reduce`.
 
 ## Glass
 

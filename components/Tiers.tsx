@@ -8,8 +8,11 @@ import { TIERS } from "./copy";
  *
  * Five nested rings, one per tier. Because each tier contains the one before
  * it, pointing at tier N lights every ring up to and including N — the
- * lighting is cumulative, not a single selection. The hovered tier is the
+ * lighting is cumulative, not a single selection. The pointed-at tier is the
  * "lead": thicker stroke, a halo, and its description fades in.
+ *
+ * Nexus is lit on load so the diagram reads as explorable, and the selection
+ * is sticky — moving away holds the last tier rather than going dark.
  *
  * Geometry is the prototype's, unchanged:
  *   ring i diameter = (160 + i * 108) / 760 of the square
@@ -35,10 +38,10 @@ const ANCHOR = MAX_RAD + 13;
 
 type Ring = ReturnType<typeof ringFor>;
 
-function ringFor(i: number, active: number | null) {
+function ringFor(i: number, active: number) {
   const pct = ((INNER + i * STEP) / BASE) * 100;
   const rad = pct / 2;
-  const on = active !== null && i <= active;
+  const on = i <= active;
   const isLead = active === i;
 
   const a = (ANGLES[i] * Math.PI) / 180;
@@ -77,15 +80,16 @@ function ringClass(r: Ring) {
 }
 
 export function Tiers() {
-  const [active, setActive] = useState<number | null>(null);
+  // Nexus starts lit so the diagram reads as explorable rather than inert,
+  // and the selection is sticky — pointing away leaves the last tier lit
+  // instead of resetting to nothing.
+  const [active, setActive] = useState(0);
   const rings = TIERS.items.map((_, i) => ringFor(i, active));
   // Rings paint largest-first so the smallest ends up on top. Labels stay in
   // natural order — they are absolutely positioned overlays, so their DOM
   // order does not affect the stack, and reversing them would put tab order
   // at 05 -> 01, backwards from the numbering a keyboard user is reading.
   const stacked = [...rings].reverse();
-
-  const clear = () => setActive(null);
 
   return (
     <section id="products" className="section section-line">
@@ -106,7 +110,6 @@ export function Tiers() {
                 className={ringClass(r)}
                 aria-hidden="true"
                 onMouseEnter={() => setActive(r.i)}
-                onMouseLeave={clear}
                 style={{ width: `${r.pct}%`, height: `${r.pct}%` }}
               />
             ))}
@@ -138,9 +141,7 @@ export function Tiers() {
                   type="button"
                   className={`tier-label${r.on ? " is-on" : ""}${r.isLead ? " is-lead" : ""}`}
                   onMouseEnter={() => setActive(r.i)}
-                  onMouseLeave={clear}
                   onFocus={() => setActive(r.i)}
-                  onBlur={clear}
                   aria-pressed={r.isLead}
                   data-dir={r.dir}
                   style={{

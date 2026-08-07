@@ -18,7 +18,7 @@ export const HERO = {
   titleTail: "AI systems.",
   lede: "Architecting the next paradigm shift for {high performance} AI systems.",
   cta: "Start a conversation",
-  scrollLabel: "Scroll to About",
+  scrollCue: "Scroll to explore",
 };
 
 /* The tabbed brief viewer. Content is main's, verbatim. */
